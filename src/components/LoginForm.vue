@@ -21,16 +21,11 @@
       class="btn btn-secondary flex items-center gap-2 px-4 py-2 rounded text-white font-semibold disabled:opacity-50 hover:bg-gray-800 hover:text-white dark:hover:text-white transition"
       :disabled="loading"
     >
-      <component
-        :is="loading ? Loader : LogIn"
-        class="mr-2"
-        :class="{ 'animate-spin': loading }"
-      />
+      <component :is="loading ? Loader : LogIn" class="mr-2" :class="{ 'animate-spin': loading }" />
       <span>{{ loading ? 'Logging in...' : 'Login' }}</span>
     </button>
   </form>
 </template>
-
 
 <script setup>
 import { ref } from 'vue'
@@ -68,7 +63,6 @@ const handleLogin = async () => {
     loading.value = false
   }
 }
-
 </script>
 
 <style scoped>

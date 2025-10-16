@@ -16,11 +16,7 @@
         </RouterLink>
       </h2>
 
-      <div class="flex justify-end w-full pr-1">
-        <div v-if="!auth.isLoggedIn">
-          <LoginForm />
-        </div>
-      </div>
+
 
       <DarkMode class="hidden sm:block" />
     </header>
@@ -28,12 +24,9 @@
 </template>
 
 <script setup>
-import LoginForm from './LoginForm.vue'
 import { islargerScreen, isDesktop } from '@/composables/useScreen'
-import { useAuthStore } from '@/stores/auth'
 import DarkMode from '@/components/DarkModeToggle.vue'
 import { useDark } from '@vueuse/core'
-const auth = useAuthStore()
 
 const isDark = useDark({
   selector: 'body',

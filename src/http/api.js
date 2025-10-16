@@ -4,10 +4,10 @@ import { useAuthStore } from "@/stores/auth";
 // Create Axios instance
 const api = axios.create({
   baseURL: "http://localhost:8000/api/v1",
-   headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json'
-  }
+  headers: {
+    // Let axios set Content-Type automatically based on payload (JSON vs FormData)
+    Accept: 'application/json',
+  },
 });
 // Automatically attach token
 api.interceptors.request.use(config => {
@@ -30,7 +30,9 @@ api.interceptors.response.use(
       try {
         const auth = useAuthStore()
         await auth.logout()
-      } catch {}
+      } catch {
+        // ignore
+      }
       // Hard redirect to ensure clean state
       if (typeof window !== 'undefined') {
         window.location.href = '/login'

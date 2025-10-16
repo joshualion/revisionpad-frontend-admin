@@ -132,7 +132,7 @@ async function handleRegister() {
       email: email.value,
       password: password.value,
       password_confirmation: password_confirmation.value,
-      role: 'student',
+      role: 'administrator',
       nickname: nickname.value, // send the honeypot field
     })
 
@@ -142,11 +142,11 @@ async function handleRegister() {
       autoClose: 2000,
     })
 
-    const auth = useAuthStore()
-    auth.loginUser(response.data.token, response.data.user)
-
-    // Redirect to verification page
-    router.push('/verify-email')
+    // Do not auto-login new admin; keep current admin session
+    username.value = ''
+    email.value = ''
+    password.value = ''
+    password_confirmation.value = ''
   } catch (error) {
     if (error.response?.status === 429) {
       toast.error('Too many attempts. Please wait and try again.', { autoClose: 4000 })

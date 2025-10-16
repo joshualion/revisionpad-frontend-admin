@@ -1,5 +1,8 @@
 <template>
-  <div class="min-h-screen flex flex-col justify-between" :class="isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'">
+  <div
+    class="min-h-screen flex flex-col justify-between"
+    :class="isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'"
+  >
     <!-- Header -->
     <LandingHeader />
 
@@ -13,11 +16,9 @@
         v-model="verificationCode"
         type="text"
         maxlength="6"
-        class="text-center form  text-gray-900 px-4 py-2 border  rounded-md w-40 text-lg tracking-widest font-mono"
+        class="text-center form text-gray-900 px-4 py-2 border rounded-md w-40 text-lg tracking-widest font-mono"
         placeholder="______"
       />
-
-
 
       <button
         @click="submitCode"
@@ -70,7 +71,7 @@ async function submitCode() {
         headers: {
           Authorization: `Bearer ${auth.getToken()}`,
         },
-      }
+      },
     )
 
     if (response.data.success) {
@@ -97,19 +98,21 @@ async function submitCode() {
 
 async function resendCode() {
   try {
-    await api.post('/auth/resend-code', {}, {
-      headers: {
-        Authorization: `Bearer ${auth.getToken()}`,
+    await api.post(
+      '/auth/resend-code',
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${auth.getToken()}`,
+        },
       },
-    })
+    )
     toast.success('Verification code resent!')
   } catch (error) {
     toast.error('Failed to resend code. ' + (error.response?.data?.message || 'Unknown error'))
   }
 }
 </script>
-
-
 
 <style scoped>
 input {

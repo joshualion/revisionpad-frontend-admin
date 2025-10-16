@@ -56,8 +56,8 @@
             class="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none transition"
           />
 
-          <!-- forgot password link -->
-          <div v-if="showForgotLink" class="mt-1 text-[0.75rem] text-right">
+          <!-- forgot password link (always visible) -->
+          <div class="mt-1 text-[0.75rem] text-right">
             <button
               type="button"
               class="text-gold hover:underline focus:outline-none"
@@ -81,10 +81,7 @@
           <span>{{ loading ? 'Logging in...' : 'Login' }}</span>
         </button>
 
-        <p
-          v-if="errorMessage"
-          class="text-center text-sm mt-2 text-red-500 font-medium"
-        >
+        <p v-if="errorMessage" class="text-center text-sm mt-2 text-red-500 font-medium">
           {{ errorMessage }}
         </p>
       </form>
@@ -115,7 +112,8 @@ const password = ref('')
 const loading = ref(false)
 const errorMessage = ref('')
 const showForgotModal = ref(false)
-const showForgotLink = ref(false)
+// forgot password link is always visible on this page
+const showForgotLink = ref(true)
 
 const auth = useAuthStore()
 const isDark = useDark({
@@ -150,9 +148,7 @@ const handleLogin = async () => {
     // Redirect admins to dashboard
     window.location.href = '/admin/dashboard'
   } catch (error) {
-    showForgotLink.value = true
-    errorMessage.value =
-      error.response?.data?.message || 'Invalid credentials. Try again.'
+    errorMessage.value = error.response?.data?.message || 'Invalid credentials. Try again.'
     toast.error(errorMessage.value, { autoClose: 2500 })
   } finally {
     loading.value = false

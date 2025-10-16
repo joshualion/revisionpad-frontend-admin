@@ -32,6 +32,10 @@ const routes = [
     path: '/register',
     name: 'register',
     component: RegisterPage,
+    meta: {
+      requiresAuth: true,
+      adminOnly: true,
+    },
   },
 
    {
@@ -105,7 +109,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // If admin already logged in, avoid public pages
-  const publicPages = new Set(['home', 'login', 'register', 'reset-password', 'verify-email'])
+  const publicPages = new Set(['home', 'login', 'reset-password', 'verify-email'])
   if (auth.isAdmin && publicPages.has(to.name)) {
     return next({ name: 'admin-dashboard' })
   }

@@ -1,14 +1,11 @@
 <template>
-  <LandingPageHeader />
-  <div
-    class="min-h-screen flex items-center justify-center px-4"
-    :class="isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'"
-  >
-    <div
-      v-if="formVisible"
-      class="max-w-xl mx-auto p-6 rounded-lg shadow-lg"
-      :class="isDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'"
-    >
+  <AdminLayout>
+    <div class="min-h-[60vh] flex items-center justify-center px-4">
+      <div
+        v-if="formVisible"
+        class="w-full max-w-xl mx-auto p-6 rounded-lg shadow-lg"
+        :class="isDark ? 'bg-gray-900 text-white border border-gray-800' : 'bg-white text-gray-800 border border-gray-200'"
+      >
       <!-- Banner/Header -->
       <div class="mb-6 text-center bg-gray-700 p-6 rounded-lg">
         <h1 class="text-3xl font-extrabold mb-2 text-white">🔒 Change Password</h1>
@@ -77,19 +74,17 @@
           <span>{{ loading ? 'Updating...' : 'Change Password' }}</span>
         </button>
       </form>
+      </div>
     </div>
-  </div>
-  <LandingPageFooter />
+  </AdminLayout>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-//import { useRouter } from 'vue-router'
+import AdminLayout from '@/layouts/AdminLayOut.vue'
 import api from '@/http/api'
 import { toast } from 'vue3-toastify'
 import { Lock, Loader, LockOpen, LockKeyhole, Eye, EyeOff } from 'lucide-vue-next'
-import LandingPageHeader from '@/components/LandingPageHeader.vue'
-import LandingPageFooter from '@/components/LandingPageFooter.vue'
 import { useDark } from '@vueuse/core'
 
 //const router = useRouter()

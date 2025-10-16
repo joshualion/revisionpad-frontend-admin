@@ -1,4 +1,13 @@
 /* Form wrapper */
+.Toastify__toast-theme--light,
+.Toastify__toast-theme--dark,
+:root {
+  --toastify-color-success: #f29c14; /* brand gold */
+  --toastify-icon-color-success: #f29c14;
+  /* some versions also read the progress color below */
+  --toastify-color-progress-success: #f29c14;
+}
+
 .form {
   display: flex;
   flex-direction: column;

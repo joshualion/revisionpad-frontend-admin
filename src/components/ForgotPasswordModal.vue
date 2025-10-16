@@ -6,14 +6,9 @@
       @click.self="close"
       :class="isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'"
     >
-      <div
-        class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md relative"
-      >
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md relative">
         <!-- Close Button -->
-        <button
-          class="absolute top-2 right-2 text-gray-500 hover:text-red-500"
-          @click="close"
-        >
+        <button class="absolute top-2 right-2 text-gray-500 hover:text-red-500" @click="close">
           ✕
         </button>
 
@@ -21,7 +16,7 @@
           Forgot Password
         </h2>
 
-        <form @submit.prevent="submit" >
+        <form @submit.prevent="submit">
           <input
             v-model="email"
             type="email"
@@ -54,7 +49,6 @@ const isDarkMode = useDark({
   valueDark: 'dark',
 })
 
-
 defineProps({
   visible: Boolean,
 })
@@ -70,7 +64,7 @@ const close = () => {
 }
 
 const submit = async () => {
-  if (!email.value  || email.value.trim() === '') {
+  if (!email.value || email.value.trim() === '') {
     toast.error('Please enter a valid email')
     return
   }
