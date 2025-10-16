@@ -16,9 +16,7 @@
             </RouterLink>
           </h2>
 
-          <div v-if="auth.isLoggedIn" class="ml-auto">
-            <NavBarProfile />
-          </div>
+          <div v-if="auth.isLoggedIn" class="ml-auto"></div>
 
           <DarkMode />
         </div>
@@ -30,7 +28,6 @@
 <script setup>
 import { isMobile, isTablet } from '@/composables/useScreen'
 import { useAuthStore } from '@/stores/auth'
-import NavBarProfile from '@/components/NavBarProfile.vue'
 import DarkMode from '@/components/DarkModeToggle.vue'
 import { useDark } from '@vueuse/core'
 const auth = useAuthStore()

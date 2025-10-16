@@ -1,13 +1,11 @@
 <template>
   <div
     class="min-h-screen flex items-center justify-center bg-cover bg-center relative"
-    :class="isDark ? 'bg-dark' : 'bg-light'"
+    :class="isDark ? 'bg-gray-900' : 'bg-white'"
   >
-
-
     <!-- Login Card -->
     <div
-      class="relative z-10  shadow-2xl rounded-2xl w-[90%] sm:w-[400px] p-8 border border-gray-200 dark:border-gray-700"
+      class="relative z-10 shadow-2xl rounded-2xl w-[90%] sm:w-[400px] p-8 border border-gray-200 dark:border-gray-700"
     >
       <!-- Logo -->
       <div class="text-center mb-8">
@@ -16,13 +14,10 @@
             class="text-4xl font-extrabold tracking-tight"
             :class="isDark ? 'text-gold' : 'text-gold'"
           >
-            <span class="text-4xl ">R</span><span
-              :class="isDark ? 'text-white' : 'text-gray-800'"
-              >evisionPad</span
-            >
+            <span class="text-4xl">R</span>
+            <span :class="isDark ? 'text-white' : 'text-gray-800'">evisionPad</span>
           </h2>
         </RouterLink>
-
       </div>
 
       <!-- Login Form -->
@@ -60,6 +55,17 @@
             autocomplete="current-password"
             class="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none transition"
           />
+
+          <!-- forgot password link -->
+          <div v-if="showForgotLink" class="mt-1 text-[0.75rem] text-right">
+            <button
+              type="button"
+              class="text-gold hover:underline focus:outline-none"
+              @click="showForgotModal = true"
+            >
+              Forgot password?
+            </button>
+          </div>
         </div>
 
         <button
@@ -83,6 +89,9 @@
         </p>
       </form>
 
+      <!-- Forgot Password Modal -->
+      <ForgotPasswordModal :visible="showForgotModal" @close="showForgotModal = false" />
+
       <!-- Optional Dark Mode Toggle -->
       <div class="flex justify-center mt-6">
         <DarkModeToggle />
@@ -99,11 +108,14 @@ import { useAuthStore } from '@/stores/auth'
 import api from '@/http/api'
 import { toast } from 'vue3-toastify'
 import DarkModeToggle from '@/components/DarkModeToggle.vue'
+import ForgotPasswordModal from '@/components/ForgotPasswordModal.vue'
 
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
 const errorMessage = ref('')
+const showForgotModal = ref(false)
+const showForgotLink = ref(false)
 
 const auth = useAuthStore()
 const isDark = useDark({
@@ -123,12 +135,22 @@ const handleLogin = async () => {
       password: password.value,
     })
 
+    // Store credentials first to maintain consistent flow
     await auth.loginUser(response.data.token, response.data.user)
-    toast.success('Welcome back, admin!', { autoClose: 2000 })
 
-    // redirect after successful login
+    // Enforce admin-only access after login
+    const role = response?.data?.user?.role || auth.user?.role
+    if (role !== 'administrator') {
+      auth.logout()
+      toast.error('Access denied: Administrators only.', { autoClose: 2500 })
+      return
+    }
+
+    toast.success('Welcome back, admin!', { autoClose: 2000 })
+    // Redirect admins to dashboard
     window.location.href = '/admin/dashboard'
   } catch (error) {
+    showForgotLink.value = true
     errorMessage.value =
       error.response?.data?.message || 'Invalid credentials. Try again.'
     toast.error(errorMessage.value, { autoClose: 2500 })
@@ -139,15 +161,7 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
-.bg-dark {
-  background: linear-gradient(135deg, #111827 0%, #000000 100%);
-}
-
-.bg-light {
-  background: linear-gradient(135deg, #FFFFFFFF 0%, #FFFFFFFF 100%);
-}
-
 input::placeholder {
-  color: #2F374BFF;
+  color: #2f374bff;
 }
 </style>

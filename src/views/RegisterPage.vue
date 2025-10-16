@@ -6,7 +6,7 @@
     <main class="flex flex-1 flex-col lg:flex-row items-center justify-center mt-0">
       <div
         class="p-6 rounded-lg shadow-lg max-w-4xl mx-auto card-shadow"
-        :class="isDark ? 'bg-dark' : 'bg-white'"
+        :class="isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'"
       >
         <!-- Banner -->
         <div class="mb-4 text-center bg-[#1f2937] text-white p-4 rounded">

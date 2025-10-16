@@ -1,15 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { toast } from 'vue3-toastify'
 import LandingPage from '../views/LandingPage.vue'
-import LoginPage from '../views/LoginPage.vue'
+// Login route now reuses LandingPage
 import VerifyEmailPage from '../views/VerifyEmailPage.vue'
-import ProfilePage from '../views/ProfilePage.vue'
 import RegisterPage from '../views/RegisterPage.vue'
 import ChangePassword from '../views/ChangePassword.vue'
 import ResetPassword from '../views/ResetPassword.vue'
 
 // --- Admin Views ---
 import AdminDashboard from '../views/admin/AdminDashboard.vue'
+import AdminProfile from '../views/admin/AdminProfile.vue'
 
 const routes = [
   {
@@ -20,7 +21,7 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: LoginPage,
+    component: LandingPage,
   },
   {
   path: '/reset-password',
@@ -48,14 +49,7 @@ const routes = [
       requiresAuth: true,
     },
   },
-  {
-    path: '/profile',
-    name: 'profile',
-    component: ProfilePage,
-    meta: {
-      requiresAuth: true,
-    },
-  },
+  // user profile page removed; admin profile remains
 
    // 🧱 Admin Section
   {
@@ -65,6 +59,15 @@ const routes = [
     meta: {
       requiresAuth: true,
       adminOnly: true, // <-- custom flag
+    },
+  },
+  {
+    path: '/admin/profile',
+    name: 'admin-profile',
+    component: AdminProfile,
+    meta: {
+      requiresAuth: true,
+      adminOnly: true,
     },
   },
 
@@ -82,14 +85,32 @@ const router = createRouter({
 })
 
 // ✅ Navigation Guard: Protects pages with meta.requiresAuth
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const auth = useAuthStore()
+  try {
+    if (!auth.user && auth.getToken()) {
+      await auth.fetchMe()
+    }
+  } catch {}
 
+  // Require auth
   if (to.meta.requiresAuth && !auth.isLoggedIn) {
-    next({ name: 'login' })
-  } else {
-    next()
+    return next({ name: 'login' })
   }
+
+  // Admin-only routes
+  if (to.meta.adminOnly && !auth.isAdmin) {
+    toast.error('Access denied: Administrators only.', { autoClose: 2500 })
+    return next({ name: 'home' })
+  }
+
+  // If admin already logged in, avoid public pages
+  const publicPages = new Set(['home', 'login', 'register', 'reset-password', 'verify-email'])
+  if (auth.isAdmin && publicPages.has(to.name)) {
+    return next({ name: 'admin-dashboard' })
+  }
+
+  next()
 })
 
 export default router

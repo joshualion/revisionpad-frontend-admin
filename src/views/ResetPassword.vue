@@ -1,10 +1,8 @@
 <template>
   <LandingPageHeader />
   <div
-    :class="[
-      isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-900',
-      'min-h-screen flex items-center justify-center px-4',
-    ]"
+    class="min-h-screen flex items-center justify-center px-4"
+    :class="isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'"
   >
     <div
       v-if="formVisible"

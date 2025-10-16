@@ -20,3 +20,22 @@ api.interceptors.request.use(config => {
 })
 
 export default api
+
+// Global response interceptor to handle auth errors
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const status = error?.response?.status
+    if (status === 401) {
+      try {
+        const auth = useAuthStore()
+        await auth.logout()
+      } catch {}
+      // Hard redirect to ensure clean state
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login'
+      }
+    }
+    return Promise.reject(error)
+  }
+)

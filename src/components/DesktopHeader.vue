@@ -20,9 +20,6 @@
         <div v-if="!auth.isLoggedIn">
           <LoginForm />
         </div>
-        <div v-else>
-          <NavBarProfile />
-        </div>
       </div>
 
       <DarkMode class="hidden sm:block" />
@@ -34,7 +31,6 @@
 import LoginForm from './LoginForm.vue'
 import { islargerScreen, isDesktop } from '@/composables/useScreen'
 import { useAuthStore } from '@/stores/auth'
-import NavBarProfile from '@/components/NavBarProfile.vue'
 import DarkMode from '@/components/DarkModeToggle.vue'
 import { useDark } from '@vueuse/core'
 const auth = useAuthStore()

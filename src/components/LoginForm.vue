@@ -18,7 +18,7 @@
     </div>
     <button
       type="submit"
-      class="btn btn-secondary flex items-center gap-2 px-4 py-2 rounded  text-white font-semibold disabled:opacity-50 hover:bg-gray-800 transition"
+      class="btn btn-secondary flex items-center gap-2 px-4 py-2 rounded text-white font-semibold disabled:opacity-50 hover:bg-gray-800 hover:text-white dark:hover:text-white transition"
       :disabled="loading"
     >
       <component

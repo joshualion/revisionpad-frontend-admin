@@ -12,6 +12,7 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
 
   const isLoggedIn = computed(() => !!token.value && !!user.value)
+  const isAdmin = computed(() => user.value?.role === 'administrator')
 
   const loadStoredAuth = () => {
     try {
@@ -39,44 +40,62 @@ export const useAuthStore = defineStore('auth', () => {
     else ls.remove('auth_user')
   })
 
- const loginUser = async (newToken, userData) => {
-  token.value = newToken
-  user.value = userData
+  const loginUser = async (newToken, userData) => {
+    token.value = newToken
+    user.value = userData
 
-  const profileStore = useProfileStore()
+    const profileStore = useProfileStore()
 
-  try {
-    const res = await api.get('/student/profile', {
-      headers: {
-        Authorization: `Bearer ${newToken}`
+    // Fetch student profile only; admin profile will be added later
+    try {
+      if (userData?.role === 'student') {
+        const res = await api.get('/student/profile', {
+          headers: { Authorization: `Bearer ${newToken}` },
+        })
+        profileStore.setProfile(res.data)
+      } else {
+        profileStore.setProfile(null)
       }
-    })
-    profileStore.setProfile(res.data)
-  } catch (err) {
-    console.error('[Auth] Failed to fetch student profile:', err)
-    profileStore.setProfile(null) // fallback
+    } catch (err) {
+      console.error('[Auth] Failed to fetch profile:', err)
+      profileStore.setProfile(null)
+    }
+
+    return true
   }
-
-  return true // 👈 makes it awaitable
-}
-
 
   const updateUser = (updatedUserData) => {
     user.value = updatedUserData
   }
 
-  const logout = () => {
-    token.value = null
-    user.value = null
-    ls.remove('auth_token')
-    ls.remove('auth_user')
+  const logout = async () => {
+    try {
+      await api.post('/auth/logout')
+    } catch {
+      // ignore network/backend errors during logout
+    } finally {
+      token.value = null
+      user.value = null
+      ls.remove('auth_token')
+      ls.remove('auth_user')
 
-    const profileStore = useProfileStore()
-    profileStore.clearProfile()
+      const profileStore = useProfileStore()
+      profileStore.clearProfile()
+    }
   }
 
   const getToken = () => {
     return token.value || ls.get('auth_token') || null
+  }
+
+  const fetchMe = async () => {
+    try {
+      const res = await api.get('/auth/me')
+      if (res?.data) user.value = res.data
+      return res?.data || null
+    } catch {
+      return null
+    }
   }
 
   loadStoredAuth()
@@ -85,9 +104,12 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     token,
     isLoggedIn,
+    isAdmin,
     loginUser,
     logout,
     getToken,
     updateUser,
+    fetchMe,
   }
 })
+

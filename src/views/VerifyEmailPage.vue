@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#fdf7e3] flex flex-col justify-between">
+  <div class="min-h-screen flex flex-col justify-between" :class="isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'">
     <!-- Header -->
     <LandingHeader />
 
@@ -40,6 +40,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useDark } from '@vueuse/core'
 import api from '@/http/api'
 import { toast } from 'vue3-toastify'
 import { useAuthStore } from '@/stores/auth'
@@ -49,11 +50,13 @@ const auth = useAuthStore()
 
 const verificationCode = ref('')
 const loading = ref(false)
+const isDark = useDark({ selector: 'body', attribute: 'class', valueDark: 'dark', valueLight: '' })
 
 onMounted(() => {
   // ✅ If already verified, bounce to profile
   if (auth.authStage !== 'unverifiedEmail') {
-    router.replace('/profile')
+    if (auth.isAdmin) return router.replace('/admin/dashboard')
+    return router.replace('/')
   }
 })
 
@@ -82,7 +85,8 @@ async function submitCode() {
       toast.success('Email verified successfully!', { autoClose: 2000 })
 
       // ✅ Go to profile setup
-      router.push('/profile')
+      if (auth.isAdmin) router.push('/admin/profile')
+      else router.push('/')
     }
   } catch (error) {
     toast.error('Verification failed: ' + (error.response?.data?.message || 'Unknown error'))

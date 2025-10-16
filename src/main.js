@@ -8,7 +8,6 @@ import router from './router'
 //import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 import * as lucideIcons from 'lucide-vue-next'
-import LogoImage from './components/LogoImage.vue'
 import { useAuthStore } from '@/stores/auth'
 import { isDark, toggleDark } from './composables/useTheme'
 
@@ -39,14 +38,13 @@ app.use(router)
 // })
 
 // 👤 Setup auth store (optional)
+// Initialize auth store (do not use as plugin)
 const auth = useAuthStore()
-app.use(auth) // <- this `app.use(auth)` is unnecessary unless `auth` is a plugin — probably safe to remove
 
 // 🧩 Global components
 Object.entries(lucideIcons).forEach(([name, component]) => {
   app.component(name, component)
 })
-app.component('LogoImage', LogoImage)
 
 // 🚀 Mount the app
 app.mount('#app')
