@@ -34,3 +34,18 @@ export const getActivity = (params = {}) =>
 export const getSystemHealth = () =>
   api.get('/admin/system', { headers: { ...tzHeader() } }).then(r => r.data)
 
+// Support Tickets (Admin)
+export const getTickets = (params = {}) =>
+  api.get('/admin/tickets', { params, headers: { ...tzHeader() } }).then(r => r.data)
+
+export const getTicket = (ticketId, params = {}) =>
+  api.get(`/admin/tickets/${ticketId}`, { params, headers: { ...tzHeader() } }).then(r => r.data)
+
+export const assignTicket = (ticketId, payload) =>
+  api.post(`/admin/tickets/${ticketId}/assign`, payload, { headers: { ...tzHeader() } }).then(r => r.data)
+
+export const updateTicketStatus = (ticketId, payload) =>
+  api.patch(`/admin/tickets/${ticketId}/status`, payload, { headers: { ...tzHeader() } }).then(r => r.data)
+
+export const replyTicket = (ticketId, payload) =>
+  api.post(`/admin/tickets/${ticketId}/reply`, payload, { headers: { ...tzHeader() } }).then(r => r.data)

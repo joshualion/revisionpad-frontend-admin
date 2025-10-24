@@ -11,6 +11,17 @@ import ResetPassword from '../views/ResetPassword.vue'
 // --- Admin Views ---
 import AdminDashboard from '../views/admin/AdminDashboard.vue'
 import AdminProfile from '../views/admin/AdminProfile.vue'
+import AdminTickets from '../views/admin/AdminTickets.vue'
+import AdminTicketShow from '../views/admin/AdminTicketShow.vue'
+import AdminExamCategories from '../views/admin/AdminExamCategories.vue'
+import AdminExamSubcategories from '../views/admin/AdminExamSubcategories.vue'
+import AdminExams from '../views/admin/AdminExams.vue'
+import AdminSubjects from '../views/admin/AdminSubjects.vue'
+import AdminExamSubjects from '../views/admin/AdminExamSubjects.vue'
+import AdminAcademicYears from '../views/admin/AdminAcademicYears.vue'
+import AdminTopics from '../views/admin/AdminTopics.vue'
+import AdminYearlyQuestions from '../views/admin/AdminYearlyQuestions.vue'
+import AdminTopicalQuestions from '../views/admin/AdminTopicalQuestions.vue'
 
 const routes = [
   {
@@ -74,6 +85,93 @@ const routes = [
       adminOnly: true,
     },
   },
+  {
+    path: '/admin/exam-categories',
+    name: 'admin-exam-categories',
+    component: AdminExamCategories,
+    meta: {
+      requiresAuth: true,
+      adminOnly: true,
+    },
+  },
+  {
+    path: '/admin/exam-subcategories',
+    name: 'admin-exam-subcategories',
+    component: AdminExamSubcategories,
+    meta: {
+      requiresAuth: true,
+      adminOnly: true,
+    },
+  },
+  {
+    path: '/admin/exams',
+    name: 'admin-exams',
+    component: AdminExams,
+    meta: {
+      requiresAuth: true,
+      adminOnly: true,
+    },
+  },
+  {
+    path: '/admin/subjects',
+    name: 'admin-subjects',
+    component: AdminSubjects,
+    meta: {
+      requiresAuth: true,
+      adminOnly: true,
+    },
+  },
+  {
+    path: '/admin/tickets',
+    name: 'admin-tickets',
+    component: AdminTickets,
+    meta: {
+      requiresAuth: true,
+      adminOnly: true,
+    },
+  },
+  {
+    path: '/admin/academic-years',
+    name: 'admin-academic-years',
+    component: AdminAcademicYears,
+    meta: { requiresAuth: true, adminOnly: true },
+  },
+  {
+    path: '/admin/exam-subjects',
+    name: 'admin-exam-subjects',
+    component: AdminExamSubjects,
+    meta: {
+      requiresAuth: true,
+      adminOnly: true,
+    },
+  },
+  {
+    path: '/admin/subject-topics',
+    name: 'admin-subject-topics',
+    component: AdminTopics,
+    meta: { requiresAuth: true, adminOnly: true },
+  },
+  {
+    path: '/admin/topical-questions',
+    name: 'admin-topical-questions',
+    component: AdminTopicalQuestions,
+    meta: { requiresAuth: true, adminOnly: true },
+  },
+  {
+    path: '/admin/yearly-questions',
+    name: 'admin-yearly-questions',
+    component: AdminYearlyQuestions,
+    meta: { requiresAuth: true, adminOnly: true },
+  },
+  {
+    path: '/admin/tickets/:id',
+    name: 'admin-ticket-show',
+    component: AdminTicketShow,
+    meta: {
+      requiresAuth: true,
+      adminOnly: true,
+    },
+  },
 
    // 🕳 Catch-all for 404s (optional)
   {
@@ -95,7 +193,9 @@ router.beforeEach(async (to, from, next) => {
     if (!auth.user && auth.getToken()) {
       await auth.fetchMe()
     }
-  } catch {}
+  } catch {
+    // ignore
+  }
 
   // Require auth
   if (to.meta.requiresAuth && !auth.isLoggedIn) {

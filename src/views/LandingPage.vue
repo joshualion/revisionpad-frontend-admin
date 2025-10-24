@@ -5,7 +5,9 @@
   >
     <!-- Login Card -->
     <div
-      class="relative z-10 shadow-2xl rounded-2xl w-[90%] sm:w-[400px] p-8 border border-gray-200 dark:border-gray-700"
+      class="relative z-10 shadow-2xl rounded-2xl w-[90%] sm:w-[400px] p-8 border border-gray-200 dark:border-gray-700
+      "
+      :class="isDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'"
     >
       <!-- Logo -->
       <div class="text-center mb-8">
@@ -26,17 +28,16 @@
           <label
             for="email"
             class="block text-sm font-semibold mb-1"
-            :class="isDark ? 'text-gray-300' : 'text-gray-700'"
+            :class="isDark ? 'text-white' : 'text-gray-700'"
             >Email</label
           >
           <input
             id="email"
             v-model="email"
             type="email"
-            placeholder="admin@revisionpad.com"
             required
             autocomplete="email"
-            class="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none transition"
+            class="form form-control w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none transition"
           />
         </div>
 
@@ -44,16 +45,15 @@
           <label
             for="password"
             class="block text-sm font-semibold mb-1"
-            :class="isDark ? 'text-gray-300' : 'text-gray-700'"
+            :class="isDark ? 'text-white' : 'text-gray-700'"
             >Password</label
           >
           <input
             id="password"
             v-model="password"
             type="password"
-            placeholder="••••••••"
             autocomplete="current-password"
-            class="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none transition"
+            class="form form-control w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none transition"
           />
 
           <!-- forgot password link (always visible) -->
@@ -113,7 +113,7 @@ const loading = ref(false)
 const errorMessage = ref('')
 const showForgotModal = ref(false)
 // forgot password link is always visible on this page
-const showForgotLink = ref(true)
+// const showForgotLink = ref(true)
 
 const auth = useAuthStore()
 const isDark = useDark({

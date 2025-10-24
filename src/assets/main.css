@@ -68,6 +68,15 @@ textarea.form-control {
   color: #374151 !important;
 }
 
+/* Dark mode overrides for form fields */
+.dark input.form-control,
+.dark select.form-select,
+.dark textarea.form-control {
+  background-color: #111827 !important; /* gray-900 */
+  border-color: #1f2937 !important;     /* gray-800 */
+  color: #e5e7eb !important;            /* gray-200 */
+}
+
 /* On focus, prevent Bootstrap blue glow */
 input.form-control:focus,
 select.form-select:focus,
@@ -84,10 +93,29 @@ textarea.form-control:focus {
   color: #374151 !important;
 }
 
+/* Dark mode hover/focus for selects */
+.dark .form-select:hover,
+.dark .form-select:focus {
+  background-color: #111827 !important;
+  border-color: #f59e0b !important; /* brand amber */
+  box-shadow: 0 0 0 0.2rem rgba(245, 158, 11, 0.2) !important;
+  color: #e5e7eb !important;
+}
+
 .form-select {
   appearance: none;
   background-color: #fff !important;
   background-image: url('data:image/svg+xml,<svg ...>'); /* Custom arrow if needed */
+}
+
+/* Dark mode select caret contrast */
+.dark .form-select {
+  background-color: #111827 !important;
+  /* light arrow for dark bg */
+  background-image: url("data:image/svg+xml,%3Csvg fill='none' stroke='%23e5e7eb' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1.5em 1.5em;
 }
 .form-checkbox {
   border-color: #f59e0b !important;
@@ -106,6 +134,19 @@ textarea.form-control:focus {
   border-radius: 0.25rem;
   background-color: #fff !important;
   border: 1px solid #d1d5db !important;
+}
+
+/* Dark mode checkbox base */
+.dark .form-checkbox,
+.dark .form-check-input {
+  background-color: #111827 !important;
+  border-color: #374151 !important; /* gray-700 */
+}
+
+.dark .form-checkbox:checked,
+.dark .form-check-input:checked {
+  background-color: #f59e0b !important;
+  border-color: #f59e0b !important;
 }
 .form-checkbox,
 .form-check-input:checked {
@@ -135,6 +176,115 @@ a {
   text-decoration: none;
   color: inherit;
 }
+
+/* Native select dropdown options styling (best-effort) */
+select option,
+select optgroup {
+  background-color: #ffffff;
+  color: #374151;
+}
+
+.dark select option,
+.dark select optgroup {
+  background-color: #111827; /* gray-900 */
+  color: #e5e7eb;            /* gray-200 */
+}
+
+/* Highlight hovered/selected options where supported */
+select option:hover,
+select option:checked {
+  background-color: #f3f4f6; /* gray-100 */
+}
+
+.dark select option:hover,
+.dark select option:checked {
+  background-color: #1f2937; /* gray-800 */
+  color: #e5e7eb;
+}
+
+/* Tables: improve dark contrast with subtle separators and hover */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+thead th {
+  font-weight: 600;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dark thead th {
+  color: #e5e7eb;
+  border-bottom: 1px solid #1f2937; /* gray-800 */
+}
+
+tbody tr:hover {
+  background-color: rgba(17, 24, 39, 0.04); /* subtle hover in light */
+}
+
+.dark tbody tr:hover {
+  background-color: rgba(242, 156, 20, 0.08); /* brand amber glow */
+}
+
+tbody td {
+  border-bottom: 1px solid #f3f4f6; /* gray-100 */
+}
+
+.dark tbody td {
+  border-bottom: 1px solid #1f2937; /* gray-800 */
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  font-size: 0.75rem; /* text-xs */
+  line-height: 1;
+  padding: 0.25rem 0.5rem; /* px-2 py-0.5 */
+  border-radius: 0.375rem; /* rounded-md */
+  font-weight: 600;
+}
+
+.badge-default {
+  background-color: #e5e7eb; /* gray-200 */
+  color: #374151;           /* gray-700 */
+}
+.dark .badge-default {
+  background-color: #374151; /* gray-700 */
+  color: #e5e7eb;            /* gray-200 */
+}
+
+.badge-success { background-color: #d1fae5; color: #065f46; }
+.dark .badge-success { background-color: rgba(16,185,129,0.15); color: #6ee7b7; }
+
+.badge-warning { background-color: #fef3c7; color: #92400e; }
+.dark .badge-warning { background-color: rgba(245,158,11,0.18); color: #fcd34d; }
+
+.badge-danger { background-color: #fee2e2; color: #7f1d1d; }
+.dark .badge-danger { background-color: rgba(239,68,68,0.18); color: #fca5a5; }
+
+.badge-info { background-color: #dbeafe; color: #1e3a8a; }
+.dark .badge-info { background-color: rgba(59,130,246,0.18); color: #93c5fd; }
+
+/* Alerts */
+.alert {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+}
+
+.alert-info { background-color: #eff6ff; color: #1e3a8a; border-color: #bfdbfe; }
+.dark .alert-info { background-color: rgba(59,130,246,0.15); color: #bfdbfe; border-color: rgba(59,130,246,0.35); }
+
+.alert-success { background-color: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+.dark .alert-success { background-color: rgba(16,185,129,0.15); color: #6ee7b7; border-color: rgba(16,185,129,0.35); }
+
+.alert-warning { background-color: #fffbeb; color: #92400e; border-color: #fde68a; }
+.dark .alert-warning { background-color: rgba(245,158,11,0.15); color: #fcd34d; border-color: rgba(245,158,11,0.35); }
+
+.alert-danger { background-color: #fef2f2; color: #7f1d1d; border-color: #fecaca; }
+.dark .alert-danger { background-color: rgba(239,68,68,0.15); color: #fca5a5; border-color: rgba(239,68,68,0.35); }
 .text-gold {
   color: #f29c14 !important;
 }

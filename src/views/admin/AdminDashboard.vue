@@ -104,9 +104,14 @@
               <Users class="w-5 h-5 text-yellow-500" />
             </div>
             <ul v-if="recentSignups && recentSignups.length" class="divide-y divide-gray-200 dark:divide-gray-800">
-              <li v-for="u in recentSignups" :key="u.id" class="py-3 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
-                  <img v-if="u.photo" :src="buildPhotoUrl(u.photo)" class="w-8 h-8 object-cover" />
+              <li v-for="u in recentSignups" :key="u.id || u.user_id || u.email" class="py-3 flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden flex items-center justify-center">
+                  <template v-if="photoUrlFor(u)">
+                    <img :src="photoUrlFor(u)" :alt="u.name || u.email" class="w-8 h-8 object-cover" />
+                  </template>
+                  <template v-else>
+                    <img :alt="u.name || u.email" class="w-8 h-8 object-cover" :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(u.name || u.email || 'U')}&background=FFD700&color=000`" />
+                  </template>
                 </div>
                 <div class="flex-1">
                   <div class="text-sm">{{ u.name }}</div>
@@ -143,7 +148,7 @@
                 <span class="text-xs text-gray-400">�</span>
               </li>
             </ul>
-            <button class="mt-4 w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white hover:text-gray-900 dark:hover:text-gray-800 transition">
+            <button @click="goToTickets" class="mt-4 w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white hover:text-gray-900 dark:hover:text-gray-800 transition">
               <Eye class="w-4 h-4" /> View All
             </button>
           </div>
@@ -156,7 +161,8 @@
           <h3 class="font-semibold">Recent Activity</h3>
           <button class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">Export</button>
         </div>
-        <div class="overflow-x-auto">
+        <!-- Allow scroll on small screens -->
+        <div class="overflow-x-auto overflow-y-auto max-h-[65vh] sm:max-h-none">
           <table class="min-w-full text-sm">
             <thead>
               <tr class="text-left text-gray-500 dark:text-gray-400">
@@ -188,6 +194,7 @@
 import AdminLayout from '@/layouts/AdminLayOut.vue'
 import { useDark } from '@vueuse/core'
 import { onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   Users,
   Activity,
@@ -204,6 +211,7 @@ import ChartCanvas from '@/components/ChartCanvas.vue'
 import { useAdminDashboard } from '@/composables/useAdminDashboard'
 
 const { loading, range, kpis: kpiData, charts, systemHealth, recentSignups, pendingTickets, activity, load, refresh } = useAdminDashboard()
+const router = useRouter()
 
 onMounted(() => { load() })
 
@@ -230,8 +238,25 @@ function statusClass(status) {
 
 const buildPhotoUrl = (rel) => {
   if (!rel) return ''
+  if (typeof rel === 'string' && /^https?:\/\//i.test(rel)) return rel
   const base = import.meta.env.VITE_BACKEND_URL || ''
   return `${base}/storage/${rel}`
+}
+
+// Resolves a user's photo across related role tables (student/administrator/examiner)
+const photoUrlFor = (u) => {
+  if (!u) return ''
+  const p =
+    u.photo ||
+    u.student?.photo ||
+    u.administrator?.photo ||
+    u.examiner?.photo ||
+    u.profile?.photo ||
+    u.user?.photo ||
+    u.user?.student?.photo ||
+    u.user?.administrator?.photo ||
+    u.user?.examiner?.photo
+  return buildPhotoUrl(p)
 }
 
 const trafficLabels = computed(() => (charts.value?.traffic || []).map(p => p.date))
@@ -261,6 +286,10 @@ const revenueSeries = computed(() => [{
   backgroundColor: '#f59e0b',
   borderColor: '#f59e0b',
 }])
+
+function goToTickets() {
+  router.push({ name: 'admin-tickets' })
+}
 </script>
 
 <style scoped>

@@ -55,29 +55,70 @@
 
         <!-- Navigation Links -->
       <nav class="flex-1 overflow-y-auto mt-4 space-y-1">
-        <RouterLink
-          v-for="item in menu"
-          :key="item.name"
-          :to="item.to"
-          class="flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200
-                hover:ring-1 hover:ring-gray-300 dark:hover:ring-gray-700"
-          :class="[
-            // base colors
-            isDark ? 'text-gray-300 hover:text-gray-900 hover:bg-white' : 'text-gray-900 hover:text-gray-800 hover:bg-white',
+        <template v-for="item in menu" :key="item.name">
+          <!-- Simple link item -->
+          <RouterLink
+            v-if="!item.children"
+            :to="item.to"
+            class="flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 hover:ring-1 hover:ring-gray-300 dark:hover:ring-gray-700"
+            :class="[
+              isDark ? 'text-gold hover:text-gray-900 hover:bg-white' : 'text-gray-900 hover:text-gray-800 hover:bg-white',
+              (route.path === item.to || route.path.startsWith((item.to || '') + '/'))
+                ? (isDark ? 'bg-yellow-900/30 text-gold' : 'bg-yellow-100 text-gold')
+                : '',
+              sidebarMinimized ? 'justify-center' : 'justify-start',
+            ]"
+          >
+            <component :is="item.icon" class="w-5 h-5 shrink-0" />
+            <span v-if="!sidebarMinimized" class="whitespace-nowrap">{{ item.name }}</span>
+          </RouterLink>
 
-            // active state
-            route.path === item.to
-              ? isDark
-                ? 'bg-yellow-900/30 text-gold'
-                : 'bg-yellow-100 text-gold'
-              : '',
+          <!-- Group with children -->
+          <div v-else class="space-y-1">
+            <button
+              type="button"
+              @click="toggleGroup(item.name)"
+              class="w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 hover:ring-1 hover:ring-gray-300 dark:hover:ring-gray-700"
+              :class="[
+                isDark ? 'text-gray-300 hover:text-gray-900 hover:bg-white' : 'text-gray-900 hover:text-gray-800 hover:bg-white',
+                isGroupActive(item)
+                  ? (isDark ? 'bg-yellow-900/30 text-gold' : 'bg-yellow-100 text-gold')
+                  : '',
+                sidebarMinimized ? 'justify-center' : 'justify-between',
+              ]"
+            >
+              <div class="flex items-center gap-3">
+                <component :is="item.icon" class="w-5 h-5 shrink-0" />
+                <span v-if="!sidebarMinimized" class="whitespace-nowrap">{{ item.name }}</span>
+              </div>
+              <ChevronDown v-if="!sidebarMinimized" class="w-4 h-4 transition-transform" :class="openGroups[item.name] ? 'rotate-180' : ''" />
+            </button>
 
-            sidebarMinimized ? 'justify-center' : 'justify-start',
-          ]"
-        >
-          <component :is="item.icon" class="w-5 h-5 shrink-0" />
-          <span v-if="!sidebarMinimized" class="whitespace-nowrap">{{ item.name }}</span>
-        </RouterLink>
+            <!-- Children -->
+            <transition name="fade">
+              <div
+                v-show="openGroups[item.name] && !sidebarMinimized"
+                class="pl-10 space-y-1"
+              >
+                <RouterLink
+                  v-for="child in item.children"
+                  :key="child.name"
+                  :to="child.to"
+                  class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 hover:ring-1 hover:ring-gray-300 dark:hover:ring-gray-700"
+                  :class="[
+                    isDark ? 'text-gray-300 hover:text-gray-900 hover:bg-white' : 'text-gray-900 hover:text-gray-800 hover:bg-white',
+                    route.path === child.to
+                      ? (isDark ? 'bg-yellow-900/30 text-gold' : 'bg-yellow-50 text-gold')
+                      : '',
+                  ]"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full bg-gold inline-block"></span>
+                  <span class="whitespace-nowrap">{{ child.name }}</span>
+                </RouterLink>
+              </div>
+            </transition>
+          </div>
+        </template>
       </nav>
 
 
@@ -92,7 +133,7 @@
     </transition>
 
     <!-- Main Area -->
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col min-h-0">
       <!-- Navbar -->
       <header
         class="flex items-center justify-between px-6 py-3 shadow-sm sticky top-0 z-20 transition-colors duration-300 glow"
@@ -189,7 +230,7 @@
 
       <!-- Main Slot -->
       <main
-        class="flex-1 overflow-y-auto p-6 transition-colors duration-300"
+        class="flex-1 overflow-y-auto p-6 transition-colors duration-300 min-h-0"
         :class="isDark ? 'bg-gray-800 text-white' : 'bg-gray-50 text-gray-800'"
       >
         <slot />
@@ -208,11 +249,14 @@ import {
   ChevronLeft,
   ChevronRight,
   LayoutDashboard,
+  GraduationCap,
   Settings,
   Users,
   User2,
   Lock,
   LogOut,
+  LifeBuoy,
+  ChevronDown,
 } from 'lucide-vue-next'
 import { useDark } from '@vueuse/core'
 import { useAuthStore } from '@/stores/auth'
@@ -257,9 +301,47 @@ onMounted(() => {
 
 const menu = [
   { name: 'Dashboard', to: '/admin/dashboard', icon: LayoutDashboard },
+  {
+    name: 'Manage Exams',
+    icon: GraduationCap,
+    children: [
+      { name: 'Exam Categories', to: '/admin/exam-categories' },
+      { name: 'Exam Subcategories', to: '/admin/exam-subcategories' },
+      { name: 'Exams', to: '/admin/exams' },
+      { name: 'Subjects/Courses', to: '/admin/subjects' },
+      { name: 'Exams Subject', to: '/admin/exam-subjects' },
+      { name: 'Subject Topics', to: '/admin/subject-topics' },
+      { name: 'Topical Questions', to: '/admin/topical-questions' },
+      { name: 'Yearly Questions', to: '/admin/yearly-questions' },
+    ],
+  },
   { name: 'Users', to: '/admin/users', icon: Users },
-  { name: 'Settings', to: '/admin/settings', icon: Settings },
+  { name: 'Tickets', to: '/admin/tickets', icon: LifeBuoy },
+  {
+    name: 'Settings',
+    icon: Settings,
+    children: [
+      { name: 'Academic Year', to: '/admin/academic-years' },
+    ],
+  },
 ]
+
+const openGroups = ref({})
+const toggleGroup = (name) => {
+  openGroups.value[name] = !openGroups.value[name]
+}
+const isGroupActive = (item) => {
+  if (!item?.children) return false
+  return item.children.some((c) => route.path === c.to || route.path.startsWith(c.to + '/'))
+}
+
+onMounted(() => {
+  menu.forEach((it) => {
+    if (it.children && isGroupActive(it)) {
+      openGroups.value[it.name] = true
+    }
+  })
+})
 
 const logout = async () => {
   try {
