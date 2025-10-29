@@ -30,7 +30,9 @@
             :class="sidebarMinimized ? 'text-2xl' : 'text-xl'"
           >
             <span class="text-3xl" :class="isDark ? 'text-gold' : 'text-gold'">R</span>
-            <span v-if="!sidebarMinimized" :class="isDark ? 'text-white' : 'text-gray-900'">evisionPad</span>
+            <span v-if="!sidebarMinimized" :class="isDark ? 'text-white' : 'text-gray-900'"
+              >evisionPad</span
+            >
           </h1>
           <!-- Sidebar toggles -->
           <div class="flex gap-2">
@@ -52,75 +54,86 @@
           </div>
         </div>
 
-
         <!-- Navigation Links -->
-      <nav class="flex-1 overflow-y-auto mt-4 space-y-1">
-        <template v-for="item in menu" :key="item.name">
-          <!-- Simple link item -->
-          <RouterLink
-            v-if="!item.children"
-            :to="item.to"
-            class="flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 hover:ring-1 hover:ring-gray-300 dark:hover:ring-gray-700"
-            :class="[
-              isDark ? 'text-gold hover:text-gray-900 hover:bg-white' : 'text-gray-900 hover:text-gray-800 hover:bg-white',
-              (route.path === item.to || route.path.startsWith((item.to || '') + '/'))
-                ? (isDark ? 'bg-yellow-900/30 text-gold' : 'bg-yellow-100 text-gold')
-                : '',
-              sidebarMinimized ? 'justify-center' : 'justify-start',
-            ]"
-          >
-            <component :is="item.icon" class="w-5 h-5 shrink-0" />
-            <span v-if="!sidebarMinimized" class="whitespace-nowrap">{{ item.name }}</span>
-          </RouterLink>
-
-          <!-- Group with children -->
-          <div v-else class="space-y-1">
-            <button
-              type="button"
-              @click="toggleGroup(item.name)"
-              class="w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 hover:ring-1 hover:ring-gray-300 dark:hover:ring-gray-700"
+        <nav class="flex-1 overflow-y-auto mt-4 space-y-1">
+          <template v-for="item in menu" :key="item.name">
+            <!-- Simple link item -->
+            <RouterLink
+              v-if="!item.children"
+              :to="item.to"
+              class="flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 hover:ring-1 hover:ring-gray-300 dark:hover:ring-gray-700"
               :class="[
-                isDark ? 'text-gray-300 hover:text-gray-900 hover:bg-white' : 'text-gray-900 hover:text-gray-800 hover:bg-white',
-                isGroupActive(item)
-                  ? (isDark ? 'bg-yellow-900/30 text-gold' : 'bg-yellow-100 text-gold')
+                isDark
+                  ? 'text-gold hover:text-gray-900 hover:bg-white'
+                  : 'text-gray-900 hover:text-gray-800 hover:bg-white',
+                route.path === item.to || route.path.startsWith((item.to || '') + '/')
+                  ? isDark
+                    ? 'bg-yellow-900/30 text-gold'
+                    : 'bg-yellow-100 text-gold'
                   : '',
-                sidebarMinimized ? 'justify-center' : 'justify-between',
+                sidebarMinimized ? 'justify-center' : 'justify-start',
               ]"
             >
-              <div class="flex items-center gap-3">
-                <component :is="item.icon" class="w-5 h-5 shrink-0" />
-                <span v-if="!sidebarMinimized" class="whitespace-nowrap">{{ item.name }}</span>
-              </div>
-              <ChevronDown v-if="!sidebarMinimized" class="w-4 h-4 transition-transform" :class="openGroups[item.name] ? 'rotate-180' : ''" />
-            </button>
+              <component :is="item.icon" class="w-5 h-5 shrink-0" />
+              <span v-if="!sidebarMinimized" class="whitespace-nowrap">{{ item.name }}</span>
+            </RouterLink>
 
-            <!-- Children -->
-            <transition name="fade">
-              <div
-                v-show="openGroups[item.name] && !sidebarMinimized"
-                class="pl-10 space-y-1"
+            <!-- Group with children -->
+            <div v-else class="space-y-1">
+              <button
+                type="button"
+                @click="toggleGroup(item.name)"
+                class="w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 hover:ring-1 hover:ring-gray-300 dark:hover:ring-gray-700"
+                :class="[
+                  isDark
+                    ? 'text-gray-300 hover:text-gray-900 hover:bg-white'
+                    : 'text-gray-900 hover:text-gray-800 hover:bg-white',
+                  isGroupActive(item)
+                    ? isDark
+                      ? 'bg-yellow-900/30 text-gold'
+                      : 'bg-yellow-100 text-gold'
+                    : '',
+                  sidebarMinimized ? 'justify-center' : 'justify-between',
+                ]"
               >
-                <RouterLink
-                  v-for="child in item.children"
-                  :key="child.name"
-                  :to="child.to"
-                  class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 hover:ring-1 hover:ring-gray-300 dark:hover:ring-gray-700"
-                  :class="[
-                    isDark ? 'text-gray-300 hover:text-gray-900 hover:bg-white' : 'text-gray-900 hover:text-gray-800 hover:bg-white',
-                    route.path === child.to
-                      ? (isDark ? 'bg-yellow-900/30 text-gold' : 'bg-yellow-50 text-gold')
-                      : '',
-                  ]"
-                >
-                  <span class="w-1.5 h-1.5 rounded-full bg-gold inline-block"></span>
-                  <span class="whitespace-nowrap">{{ child.name }}</span>
-                </RouterLink>
-              </div>
-            </transition>
-          </div>
-        </template>
-      </nav>
+                <div class="flex items-center gap-3">
+                  <component :is="item.icon" class="w-5 h-5 shrink-0" />
+                  <span v-if="!sidebarMinimized" class="whitespace-nowrap">{{ item.name }}</span>
+                </div>
+                <ChevronDown
+                  v-if="!sidebarMinimized"
+                  class="w-4 h-4 transition-transform"
+                  :class="openGroups[item.name] ? 'rotate-180' : ''"
+                />
+              </button>
 
+              <!-- Children -->
+              <transition name="fade">
+                <div v-show="openGroups[item.name] && !sidebarMinimized" class="pl-10 space-y-1">
+                  <RouterLink
+                    v-for="child in item.children"
+                    :key="child.name"
+                    :to="child.to"
+                    class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 hover:ring-1 hover:ring-gray-300 dark:hover:ring-gray-700"
+                    :class="[
+                      isDark
+                        ? 'text-gray-300 hover:text-gray-900 hover:bg-white'
+                        : 'text-gray-900 hover:text-gray-800 hover:bg-white',
+                      route.path === child.to
+                        ? isDark
+                          ? 'bg-yellow-900/30 text-gold'
+                          : 'bg-yellow-50 text-gold'
+                        : '',
+                    ]"
+                  >
+                    <span class="w-1.5 h-1.5 rounded-full bg-gold inline-block"></span>
+                    <span class="whitespace-nowrap">{{ child.name }}</span>
+                  </RouterLink>
+                </div>
+              </transition>
+            </div>
+          </template>
+        </nav>
 
         <!-- Dark Mode Toggle -->
         <div
@@ -151,21 +164,20 @@
           </button>
 
           <!-- Breadcrumb -->
-
         </div>
 
         <!-- Right Icons -->
         <div class="flex items-center gap-4">
           <!-- Notifications -->
-            <button
-              class="relative hover:scale-105 transition hover:text-gray-900 dark:hover:text-gray-800 hover:ring-1 hover:ring-gray-300 dark:hover:ring-1 dark:hover:ring-gray-700 rounded-lg"
-            >
-              <Bell class="w-5 h-5 text-gold" />
-              <span
-                v-if="notifications > 0"
-                class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"
-              ></span>
-            </button>
+          <button
+            class="relative hover:scale-105 transition hover:text-gray-900 dark:hover:text-gray-800 hover:ring-1 hover:ring-gray-300 dark:hover:ring-1 dark:hover:ring-gray-700 rounded-lg"
+          >
+            <Bell class="w-5 h-5 text-gold" />
+            <span
+              v-if="notifications > 0"
+              class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"
+            ></span>
+          </button>
 
           <!-- User Dropdown -->
           <div class="relative">
@@ -174,11 +186,16 @@
               class="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-white hover:text-gray-900 dark:hover:text-gray-800 hover:ring-1 hover:ring-gray-300 dark:hover:ring-1 dark:hover:ring-gray-700 transition"
             >
               <img
-                :src="photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=FFD700&color=000`"
+                :src="
+                  photoUrl ||
+                  `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=FFD700&color=000`
+                "
                 :alt="displayName"
                 class="w-8 h-8 rounded-full object-cover"
               />
-              <span v-if="!sidebarMinimized" class="font-semibold hidden sm:inline">{{ displayName }}</span>
+              <span v-if="!sidebarMinimized" class="font-semibold hidden sm:inline">{{
+                displayName
+              }}</span>
             </button>
 
             <transition name="fade">
@@ -197,11 +214,15 @@
                     isDark ? 'text-white' : 'text-gray-900',
                     // active state like sidebar
                     route.path === '/admin/profile'
-                      ? (isDark ? 'bg-yellow-900/30 text-gold' : 'bg-yellow-50 text-gold')
-                      : ''
+                      ? isDark
+                        ? 'bg-yellow-900/30 text-gold'
+                        : 'bg-yellow-50 text-gold'
+                      : '',
                   ]"
                 >
-                  <span class="inline-flex items-center gap-2"><User2 class="w-4 h-4"/> Profile</span>
+                  <span class="inline-flex items-center gap-2"
+                    ><User2 class="w-4 h-4" /> Profile</span
+                  >
                 </RouterLink>
                 <RouterLink
                   to="/change/password"
@@ -210,17 +231,23 @@
                     'hover:bg-yellow-100 dark:hover:bg-white hover:text-gray-900 dark:hover:text-gray-800',
                     isDark ? 'text-white' : 'text-gray-900',
                     route.name === 'ChangePassword'
-                      ? (isDark ? 'bg-yellow-900/30 text-gold' : 'bg-yellow-50 text-gold')
-                      : ''
+                      ? isDark
+                        ? 'bg-yellow-900/30 text-gold'
+                        : 'bg-yellow-50 text-gold'
+                      : '',
                   ]"
                 >
-                  <span class="inline-flex items-center gap-2"><Lock class="w-4 h-4"/> Change Password</span>
+                  <span class="inline-flex items-center gap-2"
+                    ><Lock class="w-4 h-4" /> Change Password</span
+                  >
                 </RouterLink>
                 <button
                   @click="logout"
                   class="w-full text-left px-4 py-2 rounded-lg transition hover:bg-yellow-100 dark:hover:bg-white hover:text-gray-900 dark:hover:text-gray-800 hover:ring-1 hover:ring-gray-300 dark:hover:ring-1 dark:hover:ring-gray-700"
                 >
-                  <span class="inline-flex items-center gap-2"><LogOut class="w-4 h-4"/> Logout</span>
+                  <span class="inline-flex items-center gap-2"
+                    ><LogOut class="w-4 h-4" /> Logout</span
+                  >
                 </button>
               </div>
             </transition>
@@ -251,13 +278,14 @@ import {
   LayoutDashboard,
   GraduationCap,
   Settings,
-  Users,
-  User2,
-  Lock,
-  LogOut,
-  LifeBuoy,
-  ChevronDown,
-} from 'lucide-vue-next'
+    Users,
+    User2,
+    Lock,
+    LogOut,
+    LifeBuoy,
+    ChevronDown,
+    MapPin,
+  } from 'lucide-vue-next'
 import { useDark } from '@vueuse/core'
 import { useAuthStore } from '@/stores/auth'
 import { toast } from 'vue3-toastify'
@@ -297,8 +325,6 @@ onMounted(() => {
   })()
 })
 
-
-
 const menu = [
   { name: 'Dashboard', to: '/admin/dashboard', icon: LayoutDashboard },
   {
@@ -315,16 +341,32 @@ const menu = [
       { name: 'Yearly Questions', to: '/admin/yearly-questions' },
     ],
   },
-  { name: 'Users', to: '/admin/users', icon: Users },
-  { name: 'Tickets', to: '/admin/tickets', icon: LifeBuoy },
   {
-    name: 'Settings',
-    icon: Settings,
+    name: 'User Management',
+    icon: Users,
     children: [
-      { name: 'Academic Year', to: '/admin/academic-years' },
+      { name: 'Users', to: '/admin/users' },
+      { name: 'Students', to: '/admin/students' },
+      { name: 'Administrators', to: '/admin/administrators' },
+      { name: 'Examiners', to: '/admin/examiners' },
     ],
   },
-]
+  { name: 'Tickets', to: '/admin/tickets', icon: LifeBuoy },
+    {
+      name: 'Settings',
+      icon: Settings,
+      children: [{ name: 'Academic Year', to: '/admin/academic-years' }],
+    },
+    {
+      name: 'Locations',
+      icon: MapPin,
+      children: [
+        { name: 'Countries', to: '/admin/locations/countries' },
+        { name: 'States', to: '/admin/locations/states' },
+        { name: 'Cities', to: '/admin/locations/cities' },
+      ],
+    },
+  ]
 
 const openGroups = ref({})
 const toggleGroup = (name) => {

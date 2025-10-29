@@ -202,6 +202,20 @@ const saving = ref(false)
 const formError = ref('')
 const form = ref({ id: null, subject_id: '', academic_level_id: '', name: '', description: '', slug: '' })
 
+const extractErrorMessage = (error, fallback = 'Something went wrong') => {
+  const response = error?.response?.data
+  if (response?.errors) {
+    const first = Object.values(response.errors)
+      .flat()
+      .find(Boolean)
+    if (first) return first
+  }
+  if (typeof response?.message === 'string') {
+    return response.message
+  }
+  return fallback
+}
+
 // Import CSV state
 const importModal = ref(false)
 const importing = ref(false)
@@ -299,8 +313,7 @@ async function save() {
     }
     closeModal(); await loadTopics()
   } catch (e) {
-    const msg = e?.response?.data?.message
-    formError.value = msg || 'Save failed'
+    formError.value = extractErrorMessage(e, 'Save failed')
     toast.error(formError.value)
   } finally {
     saving.value = false
@@ -345,11 +358,18 @@ async function submitImport() {
     const { data } = await api.post('/admin/topics/import-csv', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
     const ok = data?.success !== false
     const created = data?.created_count ?? 0
-    toast[ok ? 'success' : 'error'](`Imported ${created} topic(s)${ok ? '' : ' with errors'}`)
+    const skipped = data?.skipped_count ?? data?.errors?.length ?? 0
+    const baseMsg = `Imported ${created} topic(s)`
+    if (ok) {
+      toast.success(baseMsg)
+    } else {
+      const firstError = data?.errors?.[0]?.errors?.[0]
+      toast.error(`${baseMsg}. ${skipped} row(s) failed.${firstError ? ` ${firstError}` : ''}`)
+    }
     importModal.value = false
     await loadTopics()
   } catch (e) {
-    toast.error(e?.response?.data?.message || 'Import failed')
+    toast.error(extractErrorMessage(e, 'Import failed'))
   } finally {
     importing.value = false
   }

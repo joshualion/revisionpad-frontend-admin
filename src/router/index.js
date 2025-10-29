@@ -22,6 +22,13 @@ import AdminAcademicYears from '../views/admin/AdminAcademicYears.vue'
 import AdminTopics from '../views/admin/AdminTopics.vue'
 import AdminYearlyQuestions from '../views/admin/AdminYearlyQuestions.vue'
 import AdminTopicalQuestions from '../views/admin/AdminTopicalQuestions.vue'
+import UsersManagement from '../views/admin/UsersManagement.vue'
+import StudentsManagement from '../views/admin/StudentsManagement.vue'
+import AdministratorsManagement from '../views/admin/AdministratorsManagement.vue'
+import ExaminersManagement from '../views/admin/ExaminersManagement.vue'
+import CountriesManagement from '../views/admin/CountriesManagement.vue'
+import StatesManagement from '../views/admin/StatesManagement.vue'
+import CitiesManagement from '../views/admin/CitiesManagement.vue'
 
 const routes = [
   {
@@ -35,9 +42,9 @@ const routes = [
     component: LandingPage,
   },
   {
-  path: '/reset-password',
-  name: 'reset-password',
-  component: ResetPassword,
+    path: '/reset-password',
+    name: 'reset-password',
+    component: ResetPassword,
   },
   {
     path: '/register',
@@ -49,7 +56,7 @@ const routes = [
     },
   },
 
-   {
+  {
     path: '/change/password',
     name: 'ChangePassword',
     component: ChangePassword,
@@ -66,7 +73,7 @@ const routes = [
   },
   // user profile page removed; admin profile remains
 
-   // 🧱 Admin Section
+  // 🧱 Admin Section
   {
     path: '/admin/dashboard',
     name: 'admin-dashboard',
@@ -172,8 +179,71 @@ const routes = [
       adminOnly: true,
     },
   },
+  {
+    path: '/admin/users',
+    name: 'admin-users',
+    component: UsersManagement,
+    meta: {
+      requiresAuth: true,
+      adminOnly: true,
+    },
+  },
+  {
+    path: '/admin/students',
+    name: 'admin-students',
+    component: StudentsManagement,
+    meta: {
+      requiresAuth: true,
+      adminOnly: true,
+    },
+  },
+  {
+    path: '/admin/administrators',
+    name: 'admin-administrators',
+    component: AdministratorsManagement,
+    meta: {
+      requiresAuth: true,
+      adminOnly: true,
+    },
+  },
+  {
+    path: '/admin/examiners',
+    name: 'admin-examiners',
+    component: ExaminersManagement,
+    meta: {
+      requiresAuth: true,
+      adminOnly: true,
+    },
+  },
+  {
+    path: '/admin/locations/countries',
+    name: 'admin-countries',
+    component: CountriesManagement,
+    meta: {
+      requiresAuth: true,
+      adminOnly: true,
+    },
+  },
+  {
+    path: '/admin/locations/states',
+    name: 'admin-states',
+    component: StatesManagement,
+    meta: {
+      requiresAuth: true,
+      adminOnly: true,
+    },
+  },
+  {
+    path: '/admin/locations/cities',
+    name: 'admin-cities',
+    component: CitiesManagement,
+    meta: {
+      requiresAuth: true,
+      adminOnly: true,
+    },
+  },
 
-   // 🕳 Catch-all for 404s (optional)
+  // 🕳 Catch-all for 404s (optional)
   {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
@@ -189,17 +259,28 @@ const router = createRouter({
 // ✅ Navigation Guard: Protects pages with meta.requiresAuth
 router.beforeEach(async (to, from, next) => {
   const auth = useAuthStore()
-  try {
-    if (!auth.user && auth.getToken()) {
-      await auth.fetchMe()
+  let sessionInvalidated = false
+
+  if (!auth.user && auth.getToken()) {
+    try {
+      const me = await auth.fetchMe()
+      if (!me) {
+        sessionInvalidated = true
+      }
+    } catch {
+      sessionInvalidated = true
     }
-  } catch {
-    // ignore
+  }
+
+  if (sessionInvalidated) {
+    await auth.logout()
+    toast.info('Your session has ended. Please sign in again.', { autoClose: 2500 })
+    return next({ name: 'login', query: { redirect: to.fullPath } })
   }
 
   // Require auth
   if (to.meta.requiresAuth && !auth.isLoggedIn) {
-    return next({ name: 'login' })
+    return next({ name: 'login', query: { redirect: to.fullPath } })
   }
 
   // Admin-only routes
